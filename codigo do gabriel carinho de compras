@@ -1,0 +1,97 @@
+def cadastrar():
+    username = input("Digite o nome de usuário: ")
+    senha = input("Digite a senha: ")
+    with open("usuarios.txt", "a") as arquivo:
+        arquivo.write(f"{username};{senha}\n")
+    print("Cadastro realizado com sucesso!")
+
+def login():
+    username = input("Digite o nome de usuário: ")
+    senha = input("Digite a senha: ")
+    with open("usuarios.txt", "r") as arquivo:
+        for linha in arquivo:
+            usuario, senha_armazenada = linha.strip().split(";")
+            if usuario == username and senha_armazenada == senha:
+                print("Login realizado com sucesso!")
+                return
+    print("Nome de usuário ou senha incorretos.")
+
+def main():
+    while True:
+        print("1. Cadastrar")
+        print("2. Login")
+        opcao = input("Escolha uma opção: ")
+        if opcao == "1":
+            cadastrar()
+        elif opcao == "2":
+            login()
+            break
+        else:
+            print("Opção inválida.")
+
+if __name__ == "__main__":
+    main()
+   # carrinho.txt
+# formato: produto;quantidade
+# exemplo: maçã;3
+
+def ler_carrinho():
+    carrinho = []
+    try:
+        with open("carrinho.txt", "r") as arquivo:
+            for linha in arquivo:
+                produto, quantidade = linha.strip().split(";")
+                carrinho.append({"produto": produto, "quantidade": int(quantidade)})
+    except FileNotFoundError:
+        pass
+    return carrinho
+
+def gravar_carrinho(carrinho):
+    with open("carrinho.txt", "w") as arquivo:
+        for item in carrinho:
+            arquivo.write(f"{item['produto']};{item['quantidade']}\n")
+
+def adicionar_produto(carrinho):
+    produto = input("Digite o nome do produto: ")
+    quantidade = int(input("Digite a quantidade do produto: "))
+    carrinho.append({"produto": produto, "quantidade": quantidade})
+    gravar_carrinho(carrinho)
+    print("Produto adicionado ao carrinho!")
+
+def remover_produto(carrinho):
+    produto = input("Digite o nome do produto a remover: ")
+    for item in carrinho:
+        if item["produto"] == produto:
+            carrinho.remove(item)
+            gravar_carrinho(carrinho)
+            print("Produto removido do carrinho!")
+            return
+    print("Produto não encontrado no carrinho.")
+
+def ver_carrinho(carrinho):
+    print("Carrinho:")
+    for item in carrinho:
+        print(f"  {item['produto']} - {item['quantidade']} unidades")
+
+def main():
+    carrinho = ler_carrinho()
+    while True:
+        print("3. Adicionar produto")
+        print("4. Remover produto")
+        print("5. Ver carrinho")
+        print("6. Sair")
+        opcao = input("Escolha uma opção: ")
+        if opcao == "3":
+            adicionar_produto(carrinho)
+        elif opcao == "4":
+            remover_produto(carrinho)
+        elif opcao == "5":
+            ver_carrinho(carrinho)
+        elif opcao == "6":
+            break
+        else:
+            print("Opção inválida.")
+
+if __name__ == "__main__":
+    main()
+   
