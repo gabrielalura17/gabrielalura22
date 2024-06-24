@@ -31,67 +31,78 @@ def main():
 
 if __name__ == "__main__":
     main()
-   # carrinho.txt
-# formato: produto;quantidade
-# exemplo: maçã;3
+class Fruta:
+    def __init__(self, nome, preco):
+        self.nome = nome
+        self.preco = preco
 
-def ler_carrinho():
-    carrinho = []
-    try:
-        with open("carrinho.txt", "r") as arquivo:
-            for linha in arquivo:
-                produto, quantidade = linha.strip().split(";")
-                carrinho.append({"produto": produto, "quantidade": int(quantidade)})
-    except FileNotFoundError:
-        pass
-    return carrinho
+# Classe para representar o carrinho de compras
+class Carrinho:
+    def __init__(self):
+        self.frutas = []
 
+    def adicionar_fruta(self, fruta):
+        self.frutas.append(fruta)
+
+    def remover_fruta(self, fruta):
+        self.frutas.remove(fruta)
+
+    def calcular_total(self):
+        total = 0
+        for fruta in self.frutas:
+            total += fruta.preco
+        return total
+
+    def calcular_carrinho(self):
+        print("Carrinho de compras:")
+        for fruta in self.frutas:
+            print(f"  - {fruta.nome}: R$ {fruta.preco:.2f}")
+        print(f"Total: R$ {self.calcular_total():.2f}")
+
+# Criar carrinho
+carrinho = Carrinho()
+
+# Criar frutas
+frutas_disponiveis = [
+    Fruta("Maçã", 2.50),
+    Fruta("Banana", 1.50),
+    Fruta("Laranja", 3.00),
+    Fruta("Mamão", 4.00),
+    Fruta("Pera", 2.00)
+]
 def gravar_carrinho(carrinho):
-    with open("carrinho.txt", "w") as arquivo:
+    with open("carrinho", "w") as arquivo:
         for item in carrinho:
             arquivo.write(f"{item['produto']};{item['quantidade']}\n")
+# Interface de usuário para o carrinho de compras
+while True:
+    print("\nOpções:")
+    print("  3. Adicionar fruta ao carrinho")
+    print("  4. Remover fruta do carrinho")
+    print("  5. Calcular total do carrinho")
+    print("  6. Ver carrinho")
+    print("  7. Sair")
 
-def adicionar_produto(carrinho):
-    produto = input("Digite o nome do produto: ")
-    quantidade = int(input("Digite a quantidade do produto: "))
-    carrinho.append({"produto": produto, "quantidade": quantidade})
-    gravar_carrinho(carrinho)
-    print("Produto adicionado ao carrinho!")
+    opcao = input("Escolha uma opção: ")
 
-def remover_produto(carrinho):
-    produto = input("Digite o nome do produto a remover: ")
-    for item in carrinho:
-        if item["produto"] == produto:
-            carrinho.remove(item)
-            gravar_carrinho(carrinho)
-            print("Produto removido do carrinho!")
-            return
-    print("Produto não encontrado no carrinho.")
+    if opcao == "3":
+        print("Frutas disponíveis:")
+        for i, fruta in enumerate(frutas_disponiveis):
+            print(f"  {i+1}. {fruta.nome}: R$ {fruta.preco:.2f}")
+        escolha = int(input("Digite o número da fruta para adicionar: "))
+        carrinho.adicionar_fruta(frutas_disponiveis[escolha-1])
+    elif opcao == "4":
+        print("Frutas no carrinho:")
+        for i, fruta in enumerate(carrinho.frutas):
+            print(f"  {i+1}. {fruta.nome}: R$ {fruta.preco:.2f}")
+        escolha = int(input("Digite o número da fruta para remover: "))
+        carrinho.remover_fruta(carrinho.frutas[escolha-1])
+    elif opcao == "5":
+        carrinho.calcular_carrinho()
+    elif opcao == "6":
+            ver_carrinho(carrinho)   
+    elif opcao == "7":
+        break
+    else:
+        print("Opção inválida. Tente novamente.")
 
-def ver_carrinho(carrinho):
-    print("Carrinho:")
-    for item in carrinho:
-        print(f"  {item['produto']} - {item['quantidade']} unidades")
-
-def main():
-    carrinho = ler_carrinho()
-    while True:
-        print("3. Adicionar produto")
-        print("4. Remover produto")
-        print("5. Ver carrinho")
-        print("6. Sair")
-        opcao = input("Escolha uma opção: ")
-        if opcao == "3":
-            adicionar_produto(carrinho)
-        elif opcao == "4":
-            remover_produto(carrinho)
-        elif opcao == "5":
-            ver_carrinho(carrinho)
-        elif opcao == "6":
-            break
-        else:
-            print("Opção inválida.")
-
-if __name__ == "__main__":
-    main()
-   
