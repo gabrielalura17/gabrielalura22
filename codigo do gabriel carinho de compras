@@ -31,78 +31,41 @@ def main():
 
 if __name__ == "__main__":
     main()
-class Fruta:
-    def __init__(self, nome, preco):
-        self.nome = nome
-        self.preco = preco
+def add_compra(nome, preco):
+    with open("compras.txt", "a") as arquivo:
+        arquivo.write(f"{nome}:{preco}\n")
 
-# Classe para representar o carrinho de compras
-class Carrinho:
-    def __init__(self):
-        self.frutas = []
 
-    def adicionar_fruta(self, fruta):
-        self.frutas.append(fruta)
+def calcular_total():
+    total = 0
+    with open("compras.txt", "r") as arquivo:
+        for linha in arquivo:
+            _, preco = linha.strip().split(":")
+            total += float(preco)
+    return total
 
-    def remover_fruta(self, fruta):
-        self.frutas.remove(fruta)
-
-    def calcular_total(self):
-        total = 0
-        for fruta in self.frutas:
-            total += fruta.preco
-        return total
-
-    def calcular_carrinho(self):
-        print("Carrinho de compras:")
-        for fruta in self.frutas:
-            print(f"  - {fruta.nome}: R$ {fruta.preco:.2f}")
-        print(f"Total: R$ {self.calcular_total():.2f}")
-
-# Criar carrinho
-carrinho = Carrinho()
-
-# Criar frutas
-frutas_disponiveis = [
-    Fruta("Maçã", 2.50),
-    Fruta("Banana", 1.50),
-    Fruta("Laranja", 3.00),
-    Fruta("Mamão", 4.00),
-    Fruta("Pera", 2.00)
-]
-def gravar_carrinho(carrinho):
-    with open("carrinho", "w") as arquivo:
-        for item in carrinho:
-            arquivo.write(f"{item['produto']};{item['quantidade']}\n")
-# Interface de usuário para o carrinho de compras
+def mostrar_compras():
+    with open("compras.txt", "r") as arquivo:
+        for linha in arquivo:
+            nome, preco = linha.strip().split(":")
+            print(f"Nome: {nome}, Preço: {preco}")
 while True:
-    print("\nOpções:")
-    print("  3. Adicionar fruta ao carrinho")
-    print("  4. Remover fruta do carrinho")
-    print("  5. Calcular total do carrinho")
-    print("  6. Ver carrinho")
-    print("  7. Sair")
+    print("1. Adicionar compra")
+    print("2. Calcular total")
+    print("3. Mostrar compras")
+    print("4. Sair")
+    escolha = input("Escolha uma opção: ")
 
-    opcao = input("Escolha uma opção: ")
-
-    if opcao == "3":
-        print("Frutas disponíveis:")
-        for i, fruta in enumerate(frutas_disponiveis):
-            print(f"  {i+1}. {fruta.nome}: R$ {fruta.preco:.2f}")
-        escolha = int(input("Digite o número da fruta para adicionar: "))
-        carrinho.adicionar_fruta(frutas_disponiveis[escolha-1])
-    elif opcao == "4":
-        print("Frutas no carrinho:")
-        for i, fruta in enumerate(carrinho.frutas):
-            print(f"  {i+1}. {fruta.nome}: R$ {fruta.preco:.2f}")
-        escolha = int(input("Digite o número da fruta para remover: "))
-        carrinho.remover_fruta(carrinho.frutas[escolha-1])
-    elif opcao == "5":
-        carrinho.calcular_carrinho()
-    elif opcao == "6":
-            ver_carrinho(carrinho)   
-    elif opcao == "7":
+    if escolha == "1":
+        nome = input("Digite o nome da compra: ")
+        preco = float(input("Digite o preço da compra: "))
+        add_compra(nome, preco)
+    elif escolha == "2":
+        total = calcular_total()
+        print(f"Total: {total:.2f}")
+    elif escolha == "3":
+        mostrar_compras()
+    elif escolha == "4":
         break
     else:
         print("Opção inválida. Tente novamente.")
-
