@@ -1,0 +1,195 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+// Estrutura de dados para representar um filme
+typedef struct {
+    char titulo[50];
+    int ano_lancamento;
+    char genero[20];
+    int quantidade; // quantidade de cópias do filme em estoque
+    int aluguel; // 0 = disponível, 1 = alugado
+} Filme;
+
+// Estrutura de dados para representar um usuário
+typedef struct {
+    char cpf[15];
+    char login[20];
+    char senha[20];
+} Usuario;
+
+// Função para registrar um filme no catálogo
+void registrar_filme(Filme *filme, char *titulo, int ano_lancamento, char *genero, int quantidade) {
+    strcpy(filme->titulo, titulo);
+    filme->ano_lancamento = ano_lancamento;
+    strcpy(filme->genero, genero);
+    filme->quantidade = quantidade;
+    filme->aluguel = 0; // inicialmente, o filme está disponível
+}
+
+// Função para registrar um usuário
+void registrar_usuario(Usuario *usuario, char *cpf, char *login, char *senha) {
+    strcpy(usuario->cpf, cpf);
+    strcpy(usuario->login, login);
+    strcpy(usuario->senha, senha);
+}
+
+// Função para fazer login
+int fazer_login(Usuario *usuario, char *login, char *senha) {
+    if (strcmp(usuario->login, login) == 0 && strcmp(usuario->senha, senha) == 0) {
+        return 1; // login sucesso
+    } else {
+        return 0; // login falhou
+    }
+}
+
+// Função para alugar um filme
+void alugar_filme(Filme *filme, char *titulo) {
+    if (filme->aluguel == 0 && filme->quantidade > 0) {
+        filme->aluguel = 1;
+        filme->quantidade--;
+        printf("Filme '%s' alugado com sucesso!\n", titulo);
+    } else {
+        printf("Filme '%s' não está disponível para aluguel.\n", titulo);
+    }
+}
+
+// Função para vender um filme
+void vender_filme(Filme *filme, char *titulo) {
+    if (filme->quantidade > 0) {
+        filme->quantidade--;
+        printf("Filme '%s' vendido com sucesso!\n", titulo);
+    } else {
+        printf("Filme '%s' não está disponível para venda.\n", titulo);
+    }
+}
+
+// Função para listar filmes
+void listar_filmes(Filme *filmes, int quantidade) {
+    for (int i = 0; i < quantidade; i++) {
+        printf("Título: %s\n", filmes[i].titulo);
+        printf("Ano de Lançamento: %d\n", filmes[i].ano_lancamento);
+        printf("Gênero: %s\n", filmes[i].genero);
+        printf("Quantidade: %d\n", filmes[i].quantidade);
+        printf("Status de Aluguel: %s\n", filmes[i].aluguel ? "Alugado" : "Disponível");
+        printf("\n");
+    }
+}
+
+// Função para cadastrar um usuário
+void cadastrar_usuario(Usuario *usuarios, int *quantidade_usuarios) {
+    char cpf[15];
+    char login[20];
+    char senha[20];
+
+    printf("Digite seu CPF:\n");
+    scanf("%s", cpf);
+    printf("Digite seu login:\n");
+    scanf("%s", login);
+    printf("Digite sua senha:\n");
+    scanf("%s", senha);
+
+    registrar_usuario(&usuarios[*quantidade_usuarios], cpf, login, senha);
+    (*quantidade_usuarios)++;
+}
+
+int main() {
+    Filme filmes[100]; // catálogo com 100 filmes
+    Usuario usuarios[10]; // catálogo com 10 usuários
+    int quantidade_usuarios = 0;
+
+    // registrar filmes
+    registrar_filme(&filmes[0], "Titanic", 1997, "Romance", 5);
+    registrar_filme(&filmes[1], "O Senhor dos Anéis", 2001, "Fantasia", 3);
+    registrar_filme(&filmes[2], "Pulp Fiction", 1994, "Ação", 2);
+    registrar_filme(&filmes[3], "A Lista de Schindler", 1993, "Drama", 4);
+    registrar_filme(&filmes[4], "Star Wars", 1977, "Ficção Científica", 6);
+
+    int opcao;
+
+    while (1) { // loop infinito
+        printf("Bem-vindo ao catálogo de filmes!\n");
+        printf("Selecione uma opção:\n");
+        printf("1. Cadastrar usuário\n");
+        printf("2. Fazer login\n");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                cadastrar_usuario(usuarios, &quantidade_usuarios);
+                break;
+            case 2:
+                char login[20];
+                char senha[20];
+
+                printf("Digite seu login e senha para continuar:\n");
+                scanf("%s %s", login, senha);
+
+                int usuario_logado = 0;
+                for (int i = 0; i < quantidade_usuarios; i++) {
+                    if (fazer_login(&usuarios[i], login, senha)) {
+                        usuario_logado = 1;
+                        break;
+                    }
+                }
+
+                if (usuario_logado) {
+                    printf("Login sucesso!\n");
+                    printf("Selecione uma opção:\n");
+                    printf("1. Listar filmes\n");
+                    printf("2. Alugar filme\n");
+                    printf("3. Vender filme\n");
+                    scanf("%d", &opcao);
+
+                    switch (opcao) {
+                        case 1:
+                            listar_filmes(filmes, 5);
+                            break;
+                        case 2:
+                            char titulo[50];
+                            printf("Digite o título do filme que deseja alugar:\n");
+                            scanf("%s", titulo);
+                            for (int i = 0; i < 5; i++) {
+                                if (strcmp(filmes[i].titulo, titulo) == 0) {
+                                    alugar_filme(&filmes[i], titulo);
+                                    break;
+                                }
+                            }
+                            break;
+                        case 3:
+                            char titulo_venda[50];
+                            printf("Digite o título do filme que deseja vender:\n");
+                            scanf("%s", titulo_venda);
+                            for (int i = 0; i < 5; i++) {
+                                if (strcmp(filmes[i].titulo, titulo_venda) == 0) {
+                                    vender_filme(&filmes[i], titulo_venda);
+                                    break;
+                                }
+                            }
+                            break;
+                        default:
+                            printf("Opção inválida.\n");
+                            break;
+                    }
+                } else {
+                    printf("Login falhou.\n");
+                }
+
+                // Voltar ao menu de cadastro
+                printf("Pressione ENTER para continuar...\n");
+                getchar();
+                printf("\n");
+                continue; // go back to the beginning of the loop
+            default:
+                printf("Opção inválida.\n");
+                break;
+        }
+
+        // Voltar ao menu de cadastro
+        printf("Pressione ENTER para continuar...\n");
+        getchar();
+        printf("\n");
+    }
+
+    return 0;
+}
